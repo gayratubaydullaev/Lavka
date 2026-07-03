@@ -43,12 +43,12 @@ SELECT
   20 + (i % 30),
   (ARRAY['A','B','C','D','E','F'])[1 + (CASE (i % 12) WHEN 0 THEN 0 WHEN 1 THEN 0 WHEN 2 THEN 0 WHEN 3 THEN 0 WHEN 4 THEN 1 WHEN 5 THEN 1 WHEN 6 THEN 4 WHEN 7 THEN 4 WHEN 8 THEN 2 WHEN 9 THEN 1 WHEN 10 THEN 5 ELSE 3 END)],
   (ARRAY[
-    '00000000-0000-4000-8000-000000000100',
-    '00000000-0000-4000-8000-000000000101',
-    '00000000-0000-4000-8000-000000000102',
-    '00000000-0000-4000-8000-000000000103',
-    '00000000-0000-4000-8000-000000000104',
-    '00000000-0000-4000-8000-000000000105'
+    '00000000-0000-4000-8000-000000000100'::uuid,
+    '00000000-0000-4000-8000-000000000101'::uuid,
+    '00000000-0000-4000-8000-000000000102'::uuid,
+    '00000000-0000-4000-8000-000000000103'::uuid,
+    '00000000-0000-4000-8000-000000000104'::uuid,
+    '00000000-0000-4000-8000-000000000105'::uuid
   ])[1 + (i % 6)],
   'Brand ' || ((i % 8) + 1),
   '8600000000' || lpad(i::text, 3, '0'),
@@ -57,8 +57,8 @@ FROM generate_series(1, 3900) AS i
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO products (id, darkstore_id, name, price, weight_g, is_halal, images, stock, zone, category, brand, barcode, active) VALUES
-  ('00000000-0000-4000-8000-000000004001', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', '{"ru":"Гранат","en":"Pomegranate","uz_latin":"Anor"}', 15900, 400, false, '["https://picsum.photos/seed/sam1/400/400"]', 30, 'A', '00000000-0000-4000-8000-000000000100', 'Samarkand', '860000010001', true),
-  ('00000000-0000-4000-8000-000000004002', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', '{"ru":"Халва","en":"Halva","uz_latin":"Halvo"}', 22000, 300, true, '["https://picsum.photos/seed/sam2/400/400"]', 20, 'B', '00000000-0000-4000-8000-000000000101', 'Samarkand', '860000010002', true)
+  ('00000000-0000-4000-8000-000000004001', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', '{"ru":"Гранат","en":"Pomegranate","uz_latin":"Anor"}', 15900, 400, false, '["https://picsum.photos/seed/sam1/400/400"]', 30, 'A', '00000000-0000-4000-8000-000000000100'::uuid, 'Samarkand', '860000010001', true),
+  ('00000000-0000-4000-8000-000000004002', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', '{"ru":"Халва","en":"Halva","uz_latin":"Halvo"}', 22000, 300, true, '["https://picsum.photos/seed/sam2/400/400"]', 20, 'B', '00000000-0000-4000-8000-000000000101'::uuid, 'Samarkand', '860000010002', true)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO staff (id, name, role, darkstore_id, online, rating, zone_certifications, shift_started_at) VALUES
