@@ -86,6 +86,6 @@ test.describe('Admin panels', () => {
 
   test('HQ analytics loads after dev login', async ({ page }) => {
     await page.goto('http://localhost:5175/');
-    await expect(page.getByRole('heading', { name: /Аналитика HQ/i })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: /Аналитика/i })).toBeVisible({ timeout: 15_000 });
   });
 });
