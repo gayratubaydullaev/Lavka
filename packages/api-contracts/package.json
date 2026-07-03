@@ -1,0 +1,10 @@
+{
+  "name": "@jomboy/api-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OpenAPI 3.0 contracts for Jomboy Lavka API",
+  "scripts": {
+    "validate": "echo 'Run: npx @redocly/cli lint openapi.yaml'"
+  },
+  "files": ["*.yaml", "schemas/"]
+}

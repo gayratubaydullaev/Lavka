@@ -1,0 +1,62 @@
+{
+  "realm": "jomboy",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "customer" },
+      { "name": "picker" },
+      { "name": "courier" },
+      { "name": "darkstore_manager" },
+      { "name": "warehouse_clerk" },
+      { "name": "support" },
+      { "name": "hq_admin" },
+      { "name": "finance" },
+      { "name": "analyst" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "jomboy-web",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:5173/*", "http://localhost:5174/*", "http://localhost:5175/*", "http://localhost:5176/*"],
+      "webOrigins": ["*"]
+    },
+    {
+      "clientId": "jomboy-mobile",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "director",
+      "enabled": true,
+      "email": "director@jomboy.local",
+      "credentials": [{ "type": "password", "value": "director123", "temporary": false }],
+      "realmRoles": ["darkstore_manager"]
+    },
+    {
+      "username": "clerk",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "clerk123", "temporary": false }],
+      "realmRoles": ["warehouse_clerk"]
+    },
+    {
+      "username": "support",
+      "enabled": true,
+      "email": "support@jomboy.local",
+      "credentials": [{ "type": "password", "value": "support123", "temporary": false }],
+      "realmRoles": ["support"]
+    },
+    {
+      "username": "hq",
+      "enabled": true,
+      "email": "hq@jomboy.local",
+      "credentials": [{ "type": "password", "value": "hq123", "temporary": false }],
+      "realmRoles": ["hq_admin"]
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+# K8s deployment concept — TZ §4 (Uztelecom)
+# Apply after building images: kubectl apply -f deploy/k8s/
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jomboy-mock-api
+  labels:
+    app: jomboy-mock-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jomboy-mock-api
+  template:
+    metadata:
+      labels:
+        app: jomboy-mock-api
+    spec:
+      containers:
+        - name: mock-api
+          image: jomboy/mock-server:latest
+          ports:
+            - containerPort: 4010
+          env:
+            - name: PORT
+              value: "4010"
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 4010
+            initialDelaySeconds: 10
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jomboy-mock-api
+spec:
+  selector:
+    app: jomboy-mock-api
+  ports:
+    - port: 80
+      targetPort: 4010
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jomboy-go-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jomboy-go-api
+  template:
+    metadata:
+      labels:
+        app: jomboy-go-api
+    spec:
+      containers:
+        - name: api
+          image: jomboy/api:latest
+          ports:
+            - containerPort: 4020
+          envFrom:
+            - secretRef:
+                name: jomboy-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jomboy-go-api
+spec:
+  selector:
+    app: jomboy-go-api
+  ports:
+    - port: 80
+      targetPort: 4020

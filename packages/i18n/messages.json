@@ -1,0 +1,344 @@
+{
+  "cart.checkout": {
+    "uz_cyrillic": "Буюртмани расмийлаштириш",
+    "uz_latin": "Buyurtmani rasmiylashtirish",
+    "ru": "Оформить заказ",
+    "en": "Checkout"
+  },
+  "delivery.free_remaining": {
+    "uz_cyrillic": "Бепул етказишга: {amount} сўм",
+    "uz_latin": "Bepul yetkazishga: {amount} so'm",
+    "ru": "До бесплатной доставки: {amount} сум",
+    "en": "{amount} UZS to free delivery"
+  },
+  "app.name": {
+    "uz_cyrillic": "Jomboy Lavka",
+    "uz_latin": "Jomboy Lavka",
+    "ru": "Jomboy Lavka",
+    "en": "Jomboy Lavka"
+  },
+  "nav.home": {
+    "uz_cyrillic": "Асосий",
+    "uz_latin": "Asosiy",
+    "ru": "Главная",
+    "en": "Home"
+  },
+  "nav.cart": {
+    "uz_cyrillic": "Сават",
+    "uz_latin": "Savat",
+    "ru": "Корзина",
+    "en": "Cart"
+  },
+  "nav.orders": {
+    "uz_cyrillic": "Буюртмалар",
+    "uz_latin": "Buyurtmalar",
+    "ru": "Заказы",
+    "en": "Orders"
+  },
+  "nav.profile": {
+    "uz_cyrillic": "Профил",
+    "uz_latin": "Profil",
+    "ru": "Профиль",
+    "en": "Profile"
+  },
+  "search.placeholder": {
+    "uz_cyrillic": "Маҳсулот қидириш...",
+    "uz_latin": "Mahsulot qidirish...",
+    "ru": "Поиск товаров...",
+    "en": "Search products..."
+  },
+  "halal.badge": {
+    "uz_cyrillic": "Ҳалол",
+    "uz_latin": "Halol",
+    "ru": "Халяль",
+    "en": "Halal"
+  },
+  "order.status.accepted": {
+    "uz_cyrillic": "Қабул қилинди",
+    "uz_latin": "Qabul qilindi",
+    "ru": "Принят",
+    "en": "Accepted"
+  },
+  "order.status.assembly": {
+    "uz_cyrillic": "Йиғилмоқда",
+    "uz_latin": "Yig'ilmoqda",
+    "ru": "Собираем",
+    "en": "Picking"
+  },
+  "order.status.in_delivery": {
+    "uz_cyrillic": "Йўлда",
+    "uz_latin": "Yo'lda",
+    "ru": "В пути",
+    "en": "On the way"
+  },
+  "order.status.delivered": {
+    "uz_cyrillic": "Етказилди",
+    "uz_latin": "Yetkazildi",
+    "ru": "Доставлен",
+    "en": "Delivered"
+  },
+  "support.report_problem": {
+    "uz_cyrillic": "Муаммо ҳақида хabar берish",
+    "uz_latin": "Muammo haqida xabar berish",
+    "ru": "Сообщить о проблеме",
+    "en": "Report a problem"
+  },
+  "auth.phone": {
+    "uz_cyrillic": "Телефон рақами",
+    "uz_latin": "Telefon raqami",
+    "ru": "Номер телефона",
+    "en": "Phone number"
+  },
+  "auth.otp": {
+    "uz_cyrillic": "SMS код",
+    "uz_latin": "SMS kod",
+    "ru": "SMS-код",
+    "en": "SMS code"
+  },
+  "courier.accept": {
+    "uz_cyrillic": "Қабул қилиш",
+    "uz_latin": "Qabul qilish",
+    "ru": "Принять",
+    "en": "Accept"
+  },
+  "courier.skip": {
+    "uz_cyrillic": "Ўтказиб юбориш",
+    "uz_latin": "O'tkazib yuborish",
+    "ru": "Пропустить",
+    "en": "Skip"
+  },
+  "courier.delivered": {
+    "uz_cyrillic": "Етказилди",
+    "uz_latin": "Yetkazildi",
+    "ru": "Доставлено",
+    "en": "Delivered"
+  },
+  "courier.offline_banner": {
+    "uz_cyrillic": "Тarmoq yo'q — ma'lumotlar avtomatik saqlanadi",
+    "uz_latin": "Tarmoq yo'q — ma'lumotlar avtomatik saqlanadi",
+    "ru": "Нет сети — данные сохранятся автоматически",
+    "en": "No network — data will sync automatically"
+  },
+  "picker.scan": {
+    "uz_cyrillic": "Сканерлаш",
+    "uz_latin": "Skanerlash",
+    "ru": "Сканировать",
+    "en": "Scan"
+  },
+  "picker.zone": {
+    "uz_cyrillic": "Зона {zone}",
+    "uz_latin": "Zona {zone}",
+    "ru": "Зона {zone}",
+    "en": "Zone {zone}"
+  },
+  "admin.dashboard": {
+    "uz_cyrillic": "Бошқарув панели",
+    "uz_latin": "Boshqaruv paneli",
+    "ru": "Панель управления",
+    "en": "Dashboard"
+  },
+  "admin.orders": {
+    "uz_cyrillic": "Буюртмалар",
+    "uz_latin": "Buyurtmalar",
+    "ru": "Заказы",
+    "en": "Orders"
+  },
+  "admin.staff": {
+    "uz_cyrillic": "Ходимлар",
+    "uz_latin": "Xodimlar",
+    "ru": "Персонал",
+    "en": "Staff"
+  },
+  "admin.assortment": {
+    "uz_cyrillic": "Аssortiment",
+    "uz_latin": "Assortiment",
+    "ru": "Ассортимент",
+    "en": "Assortment"
+  },
+  "support.tickets": {
+    "uz_cyrillic": "Тикетлар",
+    "uz_latin": "Tiketlar",
+    "ru": "Тикеты",
+    "en": "Tickets"
+  },
+  "support.refund.approve": {
+    "uz_cyrillic": "Қайтаришни tasdiqlash",
+    "uz_latin": "Qaytarishni tasdiqlash",
+    "ru": "Одобрить возврат",
+    "en": "Approve refund"
+  },
+  "hq.analytics": {
+    "uz_cyrillic": "Аналитика",
+    "uz_latin": "Analitika",
+    "ru": "Аналитика",
+    "en": "Analytics"
+  },
+  "hq.gmv": {
+    "uz_cyrillic": "GMV",
+    "uz_latin": "GMV",
+    "ru": "GMV",
+    "en": "GMV"
+  },
+  "warehouse.receipt": {
+    "uz_cyrillic": "Қабул қilish",
+    "uz_latin": "Qabul qilish",
+    "ru": "Приёмка",
+    "en": "Goods receipt"
+  },
+  "warehouse.phase2": {
+    "uz_cyrillic": "Фаза 2 — тўliq WMS",
+    "uz_latin": "Faza 2 — to'liq WMS",
+    "ru": "Фаза 2 — полный WMS",
+    "en": "Phase 2 — full WMS"
+  },
+  "warehouse.placement": {
+    "uz_cyrillic": "Жойлаш",
+    "uz_latin": "Joylash",
+    "ru": "Размещение",
+    "en": "Placement"
+  },
+  "warehouse.inventory": {
+    "uz_cyrillic": "Инвентаризация",
+    "uz_latin": "Inventarizatsiya",
+    "ru": "Инвентаризация",
+    "en": "Inventory count"
+  },
+  "warehouse.writeoff": {
+    "uz_cyrillic": "Ёзib chiqish",
+    "uz_latin": "Yozib chiqish",
+    "ru": "Списания",
+    "en": "Write-offs"
+  },
+  "warehouse.asl_belgi": {
+    "uz_cyrillic": "АСЛ БЕЛГИ маркировка",
+    "uz_latin": "ASL BELGI markirovka",
+    "ru": "Маркировка АСЛ БЕЛГИ",
+    "en": "ASL BELGI marking"
+  },
+  "warehouse.iot_alerts": {
+    "uz_cyrillic": "IoT harorat ogohlantirishlari",
+    "uz_latin": "IoT harorat ogohlantirishlari",
+    "ru": "IoT температурные алерты",
+    "en": "IoT temperature alerts"
+  },
+  "admin.wms_iot": {
+    "uz_cyrillic": "WMS / IoT",
+    "uz_latin": "WMS / IoT",
+    "ru": "WMS / IoT",
+    "en": "WMS / IoT"
+  },
+  "support.ai.suggest": {
+    "uz_cyrillic": "Жavob taklif qilish",
+    "uz_latin": "Javob taklif qilish",
+    "ru": "Предложить ответ",
+    "en": "Suggest reply"
+  },
+  "support.timeline": {
+    "uz_cyrillic": "Тайм-машина",
+    "uz_latin": "Taym-mashina",
+    "ru": "Тайм-машина",
+    "en": "Order timeline"
+  },
+  "support.fraud.risk": {
+    "uz_cyrillic": "Fraud risk",
+    "uz_latin": "Fraud risk",
+    "ru": "Risk score",
+    "en": "Risk score"
+  },
+  "support.auto_refund": {
+    "uz_cyrillic": "Avto-qaytarish",
+    "uz_latin": "Avto-qaytarish",
+    "ru": "Авто-возврат",
+    "en": "Auto-refund"
+  },
+  "loyalty.bonus": {
+    "uz_cyrillic": "Bonuslar",
+    "uz_latin": "Bonuslar",
+    "ru": "Бонусы",
+    "en": "Bonuses"
+  },
+  "loyalty.referral": {
+    "uz_cyrillic": "Do'stni taklif qilish",
+    "uz_latin": "Do'stni taklif qilish",
+    "ru": "Пригласи друга",
+    "en": "Refer a friend"
+  },
+  "promo.apply": {
+    "uz_cyrillic": "Promokodni qo'llash",
+    "uz_latin": "Promokodni qo'llash",
+    "ru": "Применить промокод",
+    "en": "Apply promocode"
+  },
+  "courier.heatmap": {
+    "uz_cyrillic": "Issiqlik xaritasi",
+    "uz_latin": "Issiqlik xaritasi",
+    "ru": "Тепловая карта",
+    "en": "Demand heatmap"
+  },
+  "common.loading": {
+    "uz_cyrillic": "Юкlanmoqda...",
+    "uz_latin": "Yuklanmoqda...",
+    "ru": "Загрузка...",
+    "en": "Loading..."
+  },
+  "common.error": {
+    "uz_cyrillic": "Хatolik yuz berdi",
+    "uz_latin": "Xatolik yuz berdi",
+    "ru": "Произошла ошибка",
+    "en": "An error occurred"
+  },
+  "common.save": {
+    "uz_cyrillic": "Сақлаш",
+    "uz_latin": "Saqlash",
+    "ru": "Сохранить",
+    "en": "Save"
+  },
+  "common.cancel": {
+    "uz_cyrillic": "Бekor qilish",
+    "uz_latin": "Bekor qilish",
+    "ru": "Отмена",
+    "en": "Cancel"
+  },
+  "hq.cohort": {
+    "uz_cyrillic": "Kohort tahlili",
+    "uz_latin": "Kohort tahlili",
+    "ru": "Когортный анализ",
+    "en": "Cohort analysis"
+  },
+  "hq.funnel": {
+    "uz_cyrillic": "Konversiya voronkasi",
+    "uz_latin": "Konversiya voronkasi",
+    "ru": "Воронка конверсии",
+    "en": "Conversion funnel"
+  },
+  "hq.darkstores": {
+    "uz_cyrillic": "Darkstorelar",
+    "uz_latin": "Darkstorelar",
+    "ru": "Дарксторы",
+    "en": "Darkstores"
+  },
+  "hq.antifraud": {
+    "uz_cyrillic": "Antifrod",
+    "uz_latin": "Antifrod",
+    "ru": "Антифрод",
+    "en": "Antifraud"
+  },
+  "city.tashkent": {
+    "uz_cyrillic": "Тошкент",
+    "uz_latin": "Toshkent",
+    "ru": "Ташкент",
+    "en": "Tashkent"
+  },
+  "city.samarkand": {
+    "uz_cyrillic": "Сamarqand",
+    "uz_latin": "Samarqand",
+    "ru": "Самарканд",
+    "en": "Samarkand"
+  },
+  "city.waitlist": {
+    "uz_cyrillic": "Tez orada shaharizda",
+    "uz_latin": "Tez orada shaharizda",
+    "ru": "Скоро в вашем городе",
+    "en": "Coming soon to your city"
+  }
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "id": "refund-1",
+    "keywords": ["возврат", "refund", "qaytarish", "деньги", "вернуть"],
+    "question_ru": "Как оформить возврат?",
+    "answer_ru": "Возврат оформляется через поддержку: нажмите «Сообщить о проблеме» в приложении. Оператор проверит заказ и вернёт средства на карту в течение 24 часов.",
+    "answer_uz": "Qaytarish qo'llab-quvvatlash orqali: ilovada «Muammo haqida xabar bering». Operator tekshiradi, 24 soat ichida kartaga qaytariladi."
+  },
+  {
+    "id": "refund-2",
+    "keywords": ["частичный", "partial", "часть", "не все"],
+    "question_ru": "Можно ли частичный возврат?",
+    "answer_ru": "Да, при частичном возврате указывается сумма за конкретные позиции. Оператор согласует сумму с вами в чате.",
+    "answer_uz": "Ha, qisman qaytarishda aniq mahsulotlar summasi ko'rsatiladi."
+  },
+  {
+    "id": "delivery-1",
+    "keywords": ["доставка", "yetkazish", "delivery", "опоздал", "задержка", "время"],
+    "question_ru": "Заказ опаздывает, что делать?",
+    "answer_ru": "Приносим извинения за задержку. Мы отслеживаем заказ в реальном времени. Если задержка более 30 минут — создайте тикет с типом «Не доставлен» для приоритетной обработки.",
+    "answer_uz": "Kechikish uchun uzr. 30 daqiqadan oshsa «Yetkazilmadi» turida murojaat qiling."
+  },
+  {
+    "id": "delivery-2",
+    "keywords": ["бесплатная", "free", "bepul", "100000", "100 000"],
+    "question_ru": "Когда бесплатная доставка?",
+    "answer_ru": "Доставка бесплатна при сумме заказа от 100 000 сум. До порога показывается, сколько осталось до бесплатной доставки.",
+    "answer_uz": "100 000 so'mdan yuqori buyurtmada yetkazish bepul."
+  },
+  {
+    "id": "wrong-1",
+    "keywords": ["не тот", "wrong", "noto'g'ri", "перепутали", "ошибка"],
+    "question_ru": "Привезли не тот товар",
+    "answer_ru": "Сфотографируйте полученный товар и опишите проблему в тикете. Мы организуем замену или полный возврат в зависимости от ситуации.",
+    "answer_uz": "Noto'g'ri mahsulot rasmini yuboring, almashtiramiz yoki qaytaramiz."
+  },
+  {
+    "id": "damage-1",
+    "keywords": ["поврежд", "damage", "битый", "помятый", "разбит"],
+    "question_ru": "Товар повреждён при доставке",
+    "answer_ru": "Приложите фото повреждения к обращению. Возврат или замена будет одобрен после проверки оператором.",
+    "answer_uz": "Shikastlangan mahsulot suratini yuboring, tekshiruvdan keyin qaytariladi."
+  },
+  {
+    "id": "halal-1",
+    "keywords": ["халяль", "halal", "halol", "сертификат"],
+    "question_ru": "Как проверить халяль?",
+    "answer_ru": "В каталоге отмечены халяль-товары значком «Халол». Мясо и молочные продукты проходят проверку сертификации.",
+    "answer_uz": "Katalogda halol belgisi bor. Go'sht va sut mahsulotlari sertifikatdan o'tgan."
+  },
+  {
+    "id": "payment-1",
+    "keywords": ["оплата", "payment", "to'lov", "payme", "click", "карта"],
+    "question_ru": "Оплата не прошла",
+    "answer_ru": "Попробуйте другой способ: если Payme недоступен, система предложит Click. Средства не списываются при неуспешной оплате.",
+    "answer_uz": "Payme ishlamasa Click ni sinab ko'ring. Muvaffaqiyatsiz to'lovda pul yechilmaydi."
+  },
+  {
+    "id": "payment-2",
+    "keywords": ["списали", "дважды", "double", "duplicate"],
+    "question_ru": "Списали дважды",
+    "answer_ru": "Дублирующие списания возвращаются автоматически в течение 3 рабочих дней. Создайте тикет с номером заказа для ускорения.",
+    "answer_uz": "Ikki marta yechilgan pul 3 ish kuni ichida qaytariladi."
+  },
+  {
+    "id": "promo-1",
+    "keywords": ["промокод", "promo", "скидка", "chegirma", "bonus"],
+    "question_ru": "Как использовать промокод?",
+    "answer_ru": "Введите промокод в корзине перед оформлением. Скидка применяется к сумме товаров. Бонусы можно списать до 50% заказа.",
+    "answer_uz": "Promokodni savatda kiriting. Bonuslarni buyurtmaning 50% gacha ishlatish mumkin."
+  },
+  {
+    "id": "referral-1",
+    "keywords": ["реферал", "referral", "друг", "приглас"],
+    "question_ru": "Реферальная программа",
+    "answer_ru": "Поделитесь кодом из профиля. Друг получит скидку на первый заказ, вы — 5 000 бонусов после его доставки.",
+    "answer_uz": "Profildagi kodni ulashing. Do'stingiz chegirma oladi, siz 5000 bonus."
+  },
+  {
+    "id": "cancel-1",
+    "keywords": ["отмен", "cancel", "bekor"],
+    "question_ru": "Как отменить заказ?",
+    "answer_ru": "Отмена доступна до начала сборки. После статуса «Собираем» отмена только через поддержку.",
+    "answer_uz": "Yig'ilish boshlanmaguncha bekor qilish mumkin."
+  },
+  {
+    "id": "otp-1",
+    "keywords": ["otp", "код", "дверь", "курьер"],
+    "question_ru": "Курьер просит OTP",
+    "answer_ru": "OTP отображается в приложении при статусе «Курьер у двери». Не сообщайте код третьим лицам.",
+    "answer_uz": "OTP «Kuryer eshikda» holatida ilovada ko'rinadi."
+  },
+  {
+    "id": "frozen-1",
+    "keywords": ["замороз", "frozen", "muzlatilgan", "таял", "температур"],
+    "question_ru": "Замороженные продукты растаяли",
+    "answer_ru": "Мы контролируем температуру термосумок через IoT. Сообщите о проблеме — проверим лог температур по заказу.",
+    "answer_uz": "Termosumka harorati IoT orqali nazorat qilinadi. Muammo haqida xabar bering."
+  },
+  {
+    "id": "account-1",
+    "keywords": ["аккаунт", "account", "телефон", "войти", "login"],
+    "question_ru": "Не могу войти в аккаунт",
+    "answer_ru": "Вход по номеру телефона и SMS-коду. Код действует 5 минут. Проверьте формат номера: +998XXXXXXXXX.",
+    "answer_uz": "Telefon va SMS kod bilan kirish. Kod 5 daqiqa amal qiladi."
+  },
+  {
+    "id": "quality-1",
+    "keywords": ["срок", "expiry", "просроч", "fresh", "свеж"],
+    "question_ru": "Товар с истекающим сроком",
+    "answer_ru": "Мы гарантируем минимальный срок годности на момент доставки. При нарушении — полный возврат за позицию.",
+    "answer_uz": "Yetkazish vaqtida yaroqlilik muddati kafolatlanadi."
+  },
+  {
+    "id": "support-1",
+    "keywords": ["оператор", "человек", "operator", "связать"],
+    "question_ru": "Хочу поговорить с оператором",
+    "answer_ru": "Оператор подключится в чате в течение SLA: критичные обращения — 2 мин, обычные — до 15 мин.",
+    "answer_uz": "Operator SLA bo'yicha chatga ulanadi."
+  },
+  {
+    "id": "loyalty-1",
+    "keywords": ["бонус", "loyalty", "1%", "накоп"],
+    "question_ru": "Как начисляются бонусы?",
+    "answer_ru": "1% от суммы каждого доставленного заказа зачисляется на бонусный счёт. 1 бонус = 1 сум.",
+    "answer_uz": "Har bir yetkazilgan buyurtmadan 1% bonus hisoblanadi."
+  }
+]

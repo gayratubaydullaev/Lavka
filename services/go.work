@@ -1,0 +1,14 @@
+go 1.22
+
+use (
+	./admin-bff
+	./api
+	./billing
+	./catalog
+	./courier
+	./notification
+	./order
+	./picker
+	./pkg
+	./support
+)

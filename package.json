@@ -1,0 +1,49 @@
+{
+  "name": "jomboy-lavka",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Jomboy Lavka Uzbekistan — client applications monorepo",
+  "scripts": {
+    "mock:dev": "npm run dev --workspace=@jomboy/mock-server",
+    "admin:director": "npm run dev --workspace=@jomboy/admin-director",
+    "admin:support": "npm run dev --workspace=@jomboy/admin-support",
+    "admin:hq": "npm run dev --workspace=@jomboy/admin-hq",
+    "admin:warehouse": "npm run dev --workspace=@jomboy/admin-warehouse",
+    "dev": "bash scripts/free-ports.sh && concurrently -k -n mock,director,support,hq,warehouse -c green,blue,magenta,yellow,cyan \"npm run mock:dev\" \"npm run admin:director\" \"npm run admin:support\" \"npm run admin:hq\" \"npm run admin:warehouse\"",
+    "dev:web": "npm run dev",
+    "lint:web": "npm run lint --workspaces --if-present",
+    "build:web": "npm run build --workspaces --if-present",
+    "loadtest": "k6 run scripts/load-test/k6-smoke.js",
+    "loadtest:mvp": "k6 run scripts/load-test/k6-mvp.js",
+    "loadtest:ws": "k6 run scripts/load-test/k6-ws.js",
+    "i18n:check": "node scripts/i18n-check.js",
+    "docker:up": "docker compose up -d postgres api",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose build api admin-bff",
+    "prod-local:up": "docker compose --profile prod-local up -d --build",
+    "prod-local:down": "docker compose --profile prod-local down",
+    "prod-local:health": "bash scripts/prod-local-health.sh",
+    "prod-local:bootstrap": "bash scripts/prod-local-bootstrap.sh",
+    "go-stack:local": "bash scripts/run-go-stack-local.sh",
+    "go-stack:check": "bash scripts/help-prod-local.sh",
+    "e2e": "npm run test --workspace=@jomboy/e2e",
+    "e2e:api": "npm run test --workspace=@jomboy/e2e -- --grep \"API health\"",
+    "e2e:go": "API_BASE_URL=http://localhost:8000/api/v1 npm run test --workspace=@jomboy/e2e -- --grep \"Go TZ\"",
+    "phase5:up": "docker compose up -d postgres api",
+    "phase5:down": "docker compose stop api postgres",
+    "phase5:reset": "docker compose down -v && docker compose up -d postgres api",
+    "phase5:logs": "docker compose logs -f api",
+    "admin:director:go": "VITE_API_BASE_URL=http://localhost:4020/api/v1 npm run admin:director"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/admin-*",
+    "e2e"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

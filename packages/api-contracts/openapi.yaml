@@ -1,0 +1,1719 @@
+openapi: 3.0.3
+info:
+  title: Jomboy Lavka API
+  version: 1.0.0
+  description: Unified API for Jomboy Lavka client applications
+servers:
+  - url: https://api.jomboy-lavka.uz/api/v1
+    description: Production
+  - url: http://localhost:4010/api/v1
+    description: Mock server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/otp/send:
+    post:
+      tags: [Auth]
+      summary: Send OTP to phone
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone:
+                  type: string
+                  example: "+998901234567"
+      responses:
+        '200':
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+
+  /auth/otp/verify:
+    post:
+      tags: [Auth]
+      summary: Verify OTP and get JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id, code]
+              properties:
+                session_id:
+                  type: string
+                code:
+                  type: string
+      responses:
+        '200':
+          description: JWT tokens
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      role:
+                        type: string
+                      name:
+                        type: string
+
+  /catalog/darkstores/{darkstore_id}:
+    get:
+      tags: [Catalog]
+      summary: Catalog for darkstore
+      parameters:
+        - $ref: '#/components/parameters/DarkstoreId'
+        - name: category_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: is_halal
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+      responses:
+        '200':
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Product'
+                  pagination:
+                    $ref: './schemas/common.yaml#/components/schemas/Pagination'
+
+  /catalog/categories:
+    get:
+      tags: [Catalog]
+      summary: Category tree
+      parameters:
+        - $ref: '#/components/parameters/DarkstoreIdQuery'
+      responses:
+        '200':
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: object
+                        parent_id:
+                          type: string
+                          nullable: true
+                        image_url:
+                          type: string
+
+  /catalog/search:
+    get:
+      tags: [Catalog]
+      summary: Full-text product search
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 2
+        - $ref: '#/components/parameters/DarkstoreIdQuery'
+        - name: language
+          in: query
+          schema:
+            type: string
+            enum: [uz_cyrillic, uz_latin, ru, en]
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Product'
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+
+  /catalog/replacements/calculate:
+    post:
+      tags: [Catalog]
+      summary: Calculate product replacements
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id, darkstore_id, reason]
+              properties:
+                product_id:
+                  type: string
+                  format: uuid
+                darkstore_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  enum: [out_of_stock, damaged, expired]
+      responses:
+        '200':
+          description: Replacement options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  replacements:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          $ref: './schemas/common.yaml#/components/schemas/Product'
+                        score:
+                          type: number
+                        price_diff:
+                          type: integer
+                  timeout_seconds:
+                    type: integer
+                    default: 60
+
+  /orders:
+    get:
+      tags: [Order]
+      summary: List customer orders
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Order'
+    post:
+      tags: [Order]
+      summary: Create order
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [darkstore_id, items, delivery_address, payment_method]
+              properties:
+                darkstore_id:
+                  type: string
+                  format: uuid
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      product_id:
+                        type: string
+                        format: uuid
+                      quantity:
+                        type: number
+                delivery_address:
+                  $ref: './schemas/common.yaml#/components/schemas/DeliveryAddress'
+                payment_method:
+                  type: string
+                  enum: [payme, click]
+                comment:
+                  type: string
+                  maxLength: 500
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                  total_amount:
+                    type: integer
+                  delivery_fee:
+                    type: integer
+                  estimated_delivery_minutes:
+                    type: integer
+
+  /orders/{order_id}:
+    get:
+      tags: [Order]
+      summary: Get order status
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/common.yaml#/components/schemas/Order'
+
+  /orders/{order_id}/cancel:
+    post:
+      tags: [Order]
+      summary: Cancel order (before ASSEMBLY)
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Cancelled
+
+  /orders/{order_id}/report-problem:
+    post:
+      tags: [Order]
+      summary: Report problem (creates support ticket)
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [problem_type, description]
+              properties:
+                problem_type:
+                  type: string
+                  enum: [not_delivered, damaged, wrong_item, missing_items, other]
+                description:
+                  type: string
+                product_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                photo_urls:
+                  type: array
+                  items:
+                    type: string
+                    format: uri
+      responses:
+        '201':
+          description: Ticket created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ticket_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    enum: [open]
+
+  /orders/{order_id}/rate:
+    post:
+      tags: [Order]
+      summary: Rate delivered order
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rating]
+              properties:
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Rating saved
+
+  /delivery/quote:
+    post:
+      tags: [Order]
+      summary: Calculate delivery fee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                darkstore_id:
+                  type: string
+                  format: uuid
+                cart_total:
+                  type: integer
+                coordinates:
+                  type: object
+                  properties:
+                    lat:
+                      type: number
+                    lng:
+                      type: number
+                mahalla_id:
+                  type: string
+      responses:
+        '200':
+          description: Delivery quote
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  delivery_fee:
+                    type: integer
+                  estimated_minutes:
+                    type: integer
+                  free_delivery_remaining:
+                    type: integer
+                  breakdown:
+                    type: object
+
+  /payments/initiate:
+    post:
+      tags: [Billing]
+      summary: Initiate payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_id, amount, provider]
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                amount:
+                  type: integer
+                provider:
+                  type: string
+                  enum: [payme, click]
+      responses:
+        '200':
+          description: Payment initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_id:
+                    type: string
+                  redirect_url:
+                    type: string
+                  provider:
+                    type: string
+
+  /refunds:
+    post:
+      tags: [Billing]
+      summary: Process refund (Support role)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order_id, amount, reason, ticket_id]
+              properties:
+                order_id:
+                  type: string
+                amount:
+                  type: integer
+                reason:
+                  type: string
+                ticket_id:
+                  type: string
+                type:
+                  type: string
+                  enum: [full, partial]
+      responses:
+        '200':
+          description: Refund processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refund_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [pending, completed, failed]
+
+  /picker/tasks/next:
+    get:
+      tags: [Picker]
+      summary: Get next picking task
+      responses:
+        '200':
+          description: Next task
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order_id:
+                    type: string
+                    format: uuid
+                  sla_deadline:
+                    type: string
+                    format: date-time
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product_id:
+                          type: string
+                        name:
+                          type: string
+                        zone:
+                          type: string
+                        shelf:
+                          type: string
+                        photo_url:
+                          type: string
+                        quantity:
+                          type: number
+                        barcode:
+                          type: string
+                        is_weighted:
+                          type: boolean
+        '204':
+          description: No tasks available
+
+  /picker/tasks/{order_id}/start:
+    post:
+      tags: [Picker]
+      summary: Start assembly
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Assembly started
+
+  /picker/tasks/{order_id}/scan:
+    post:
+      tags: [Picker]
+      summary: Scan product barcode
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id, barcode]
+              properties:
+                product_id:
+                  type: string
+                barcode:
+                  type: string
+                measured_weight:
+                  type: number
+      responses:
+        '200':
+          description: Scan OK
+        '400':
+          description: Barcode mismatch
+
+  /picker/tasks/{order_id}/replacement:
+    post:
+      tags: [Picker]
+      summary: Request product replacement
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                original_product_id:
+                  type: string
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Replacement options
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  replacement_options:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Product'
+                  timeout_seconds:
+                    type: integer
+
+  /picker/tasks/{order_id}/complete:
+    post:
+      tags: [Picker]
+      summary: Complete assembly
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items_scanned:
+                  type: array
+                package_id:
+                  type: string
+                thermal_bag_id:
+                  type: string
+      responses:
+        '200':
+          description: Order READY
+
+  /picker/stats:
+    get:
+      tags: [Picker]
+      summary: Picker KPI stats
+      responses:
+        '200':
+          description: Stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders_today:
+                    type: integer
+                  avg_time_minutes:
+                    type: number
+                  accuracy_rating:
+                    type: number
+
+  /courier/offers:
+    get:
+      tags: [Courier]
+      summary: Available delivery offers
+      responses:
+        '200':
+          description: Offers list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: string
+                        address_masked:
+                          type: string
+                        amount:
+                          type: integer
+                        earnings:
+                          type: integer
+                        distance_km:
+                          type: number
+                        weight_kg:
+                          type: number
+                        expires_at:
+                          type: string
+                          format: date-time
+
+  /courier/offers/{order_id}/accept:
+    post:
+      tags: [Courier]
+      summary: Accept delivery offer
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Accepted
+        '409':
+          description: Offer expired
+
+  /courier/offers/{order_id}/skip:
+    post:
+      tags: [Courier]
+      summary: Skip delivery offer
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Skipped
+
+  /courier/shift:
+    post:
+      tags: [Courier]
+      summary: Start or stop shift
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [start, stop]
+                vehicle_type:
+                  type: string
+                  enum: [foot, bicycle, moped, car]
+      responses:
+        '200':
+          description: Shift updated
+
+  /courier/orders/active:
+    get:
+      tags: [Courier]
+      summary: Active delivery orders
+      responses:
+        '200':
+          description: Active orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Order'
+
+  /courier/orders/{order_id}/status/pickup:
+    post:
+      tags: [Courier]
+      summary: Picked up at darkstore
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                package_qr:
+                  type: string
+      responses:
+        '200':
+          description: Pickup confirmed
+
+  /courier/orders/{order_id}/status/arrived:
+    post:
+      tags: [Courier]
+      summary: Arrived at customer door
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Arrived
+
+  /courier/orders/{order_id}/status/delivered:
+    post:
+      tags: [Courier]
+      summary: Mark order delivered
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [photo_url]
+              properties:
+                photo_url:
+                  type: string
+                confirmation_code:
+                  type: string
+                signature_data:
+                  type: string
+      responses:
+        '200':
+          description: Delivered
+
+  /courier/orders/{order_id}/problem:
+    post:
+      tags: [Courier]
+      summary: Report delivery problem
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [address_not_found, customer_unavailable, damage]
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Problem reported
+
+  /courier/location:
+    post:
+      tags: [Courier]
+      summary: Batch location update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                points:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lng:
+                        type: number
+                      timestamp:
+                        type: string
+                        format: date-time
+      responses:
+        '200':
+          description: Location saved
+
+  /courier/stats:
+    get:
+      tags: [Courier]
+      summary: Courier earnings stats
+      responses:
+        '200':
+          description: Stats
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  earnings_today:
+                    type: integer
+                  earnings_week:
+                    type: integer
+                  earnings_month:
+                    type: integer
+                  deliveries_count:
+                    type: integer
+                  rating:
+                    type: number
+
+  /tickets:
+    get:
+      tags: [Support]
+      summary: Ticket queue (operator)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tickets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tickets:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Ticket'
+    post:
+      tags: [Support]
+      summary: Create ticket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: string
+                type:
+                  type: string
+                description:
+                  type: string
+                priority:
+                  type: string
+
+  /tickets/{ticket_id}:
+    get:
+      tags: [Support]
+      summary: Get ticket details
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Ticket
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/common.yaml#/components/schemas/Ticket'
+
+  /tickets/{ticket_id}/refund-decision:
+    post:
+      tags: [Support]
+      summary: Refund decision
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [approve, reject, partial]
+                amount:
+                  type: integer
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Decision recorded
+
+  /admin/darkstores/{id}/dashboard:
+    get:
+      tags: [Admin]
+      summary: Darkstore real-time dashboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active_orders:
+                    type: integer
+                  pickers_online:
+                    type: integer
+                  couriers_on_route:
+                    type: integer
+                  orders_today:
+                    type: integer
+                  avg_assembly_minutes:
+                    type: number
+                  alerts:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Alert'
+
+  /admin/orders:
+    get:
+      tags: [Admin]
+      summary: List orders for darkstore
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: './schemas/common.yaml#/components/schemas/Order'
+
+  /admin/orders/{id}/reassign:
+    post:
+      tags: [Admin]
+      summary: Manual picker/courier reassignment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                picker_id:
+                  type: string
+                courier_id:
+                  type: string
+      responses:
+        '200':
+          description: Reassigned
+
+  /admin/inventory:
+    get:
+      tags: [Admin]
+      summary: Inventory list
+      parameters:
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inventory
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: './schemas/common.yaml#/components/schemas/Product'
+                        - type: object
+                          properties:
+                            active:
+                              type: boolean
+
+  /admin/inventory/{sku_id}:
+    patch:
+      tags: [Admin]
+      summary: Update inventory item
+      parameters:
+        - name: sku_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity_delta:
+                  type: integer
+                price:
+                  type: integer
+                active:
+                  type: boolean
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Updated
+
+  /admin/staff:
+    get:
+      tags: [Admin]
+      summary: Staff list
+      parameters:
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [picker, courier]
+      responses:
+        '200':
+          description: Staff
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  staff:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        role:
+                          type: string
+                        online:
+                          type: boolean
+                        rating:
+                          type: number
+                        zone_certifications:
+                          type: array
+                          items:
+                            type: string
+                        shift_started_at:
+                          type: string
+                          format: date-time
+
+  /admin/reports/gmv:
+    get:
+      tags: [Admin]
+      summary: GMV report
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: GMV report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gmv:
+                    type: integer
+                  orders_count:
+                    type: integer
+                  avg_order_value:
+                    type: integer
+                  otd_percent:
+                    type: number
+                  daily:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                        gmv:
+                          type: integer
+                        orders:
+                          type: integer
+
+  /admin/warehouse/receipts:
+    post:
+      tags: [Warehouse]
+      summary: Start goods receipt (Phase 2 demo)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                po_number:
+                  type: string
+      responses:
+        '201':
+          description: Receipt started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receipt_id:
+                    type: string
+                  expected_items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        sku_id:
+                          type: string
+                        name:
+                          type: string
+                        barcode:
+                          type: string
+                        expected_qty:
+                          type: integer
+
+  /admin/warehouse/receipts/{receipt_id}/scan:
+    post:
+      tags: [Warehouse]
+      summary: Scan item during receipt
+      parameters:
+        - name: receipt_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        '200':
+          description: Item scanned
+
+  /admin/warehouse/receipts/{receipt_id}/complete:
+    post:
+      tags: [Warehouse]
+      summary: Complete goods receipt
+      parameters:
+        - name: receipt_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Receipt completed
+
+  /wms/purchase-orders:
+    get:
+      tags: [WMS]
+      summary: List open purchase orders
+      responses:
+        '200':
+          description: Purchase orders
+
+  /wms/cells:
+    get:
+      tags: [WMS]
+      summary: Storage cells by zone
+      responses:
+        '200':
+          description: Cell layout
+
+  /catalog/asl-belgisi/verify:
+    post:
+      tags: [Catalog, WMS]
+      summary: Verify ASL BELGI marking (72h offline cache)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                product_id:
+                  type: string
+      responses:
+        '200':
+          description: Verification result
+
+  /admin/warehouse/placement:
+    post:
+      tags: [Warehouse]
+      summary: Place received goods into storage cells
+      responses:
+        '200':
+          description: Placement recorded
+
+  /admin/warehouse/inventory/counts:
+    get:
+      tags: [Warehouse]
+      summary: Cyclical inventory counts
+      responses:
+        '200':
+          description: Count sessions
+
+  /admin/warehouse/writeoffs:
+    get:
+      tags: [Warehouse]
+      summary: Writeoff requests
+      responses:
+        '200':
+          description: Writeoffs list
+    post:
+      tags: [Warehouse]
+      summary: Create writeoff (photo required)
+      responses:
+        '201':
+          description: Writeoff created
+
+  /admin/warehouse/writeoffs/{writeoff_id}/approve:
+    post:
+      tags: [Warehouse]
+      summary: Director signature on writeoff
+      parameters:
+        - name: writeoff_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Approved
+
+  /admin/warehouse/iot/alerts:
+    get:
+      tags: [IoT, Warehouse]
+      summary: Active temperature alerts (thermal bags, cells)
+      responses:
+        '200':
+          description: IoT alerts
+
+  /courier/iot/temperature:
+    post:
+      tags: [IoT, Courier]
+      summary: Courier thermal bag temperature reading
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: string
+                device_id:
+                  type: string
+                temperature_c:
+                  type: number
+                threshold_c:
+                  type: number
+      responses:
+        '200':
+          description: Reading recorded
+
+  /orders/{order_id}/timeline:
+    get:
+      tags: [Support, Phase3]
+      summary: Order time machine (Phase 3)
+      parameters:
+        - name: order_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Timeline events
+
+  /support/ai/suggest:
+    post:
+      tags: [Support, Phase3, AI]
+      summary: Mock RAG answer suggestions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                ticket_type:
+                  type: string
+      responses:
+        '200':
+          description: Suggestions with confidence
+
+  /support/ai/auto-reply:
+    post:
+      tags: [Support, Phase3, AI]
+      summary: Auto-reply if confidence high
+      responses:
+        '200':
+          description: Auto-reply availability
+
+  /tickets/{ticket_id}/auto-refund-eligibility:
+    get:
+      tags: [Support, Phase3]
+      summary: Auto-refund rules check
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Eligibility result
+
+  /customers/{customer_id}/fraud-profile:
+    get:
+      tags: [Support, Phase3, Antifraud]
+      summary: Customer fraud risk profile
+      parameters:
+        - name: customer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Risk score and flags
+
+  /loyalty/wallet:
+    get:
+      tags: [Loyalty, Phase3]
+      summary: Bonus wallet balance
+      responses:
+        '200':
+          description: Wallet
+
+  /loyalty/referral:
+    get:
+      tags: [Loyalty, Phase3]
+      summary: Referral code and stats
+      responses:
+        '200':
+          description: Referral info
+
+  /loyalty/history:
+    get:
+      tags: [Loyalty, Phase3]
+      summary: Bonus accrual history
+      responses:
+        '200':
+          description: History list
+
+  /loyalty/promocode/validate:
+    post:
+      tags: [Loyalty, Phase3]
+      summary: Validate promocode
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                subtotal:
+                  type: integer
+      responses:
+        '200':
+          description: Validation result
+
+  /courier/demand-heatmap:
+    get:
+      tags: [Courier, Phase3]
+      summary: Demand heatmap by zone A-F
+      responses:
+        '200':
+          description: Zone demand and surge coefficients
+
+  /darkstores:
+    get:
+      tags: [Phase4, HQ]
+      summary: List darkstores with metrics
+      responses:
+        '200':
+          description: Tashkent + Samarkand stores
+
+  /darkstores/{id}:
+    get:
+      tags: [Phase4, HQ]
+      summary: Darkstore details + coverage stub
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Darkstore detail
+
+  /admin/reports/cohort:
+    get:
+      tags: [HQ, Phase4]
+      summary: Cohort retention matrix
+      parameters:
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Weekly retention cohorts
+
+  /admin/reports/funnel:
+    get:
+      tags: [HQ, Phase4]
+      summary: Conversion funnel
+      parameters:
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Catalog → delivered funnel
+
+  /admin/reports/bi-summary:
+    get:
+      tags: [HQ, Phase4]
+      summary: LTV, CAC, retention, NPS
+      parameters:
+        - name: darkstore_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: BI summary KPIs
+
+  /admin/reports/metabase-embed:
+    get:
+      tags: [HQ, Phase4]
+      summary: Metabase embed URL stub
+      responses:
+        '200':
+          description: Mock embed URL
+
+  /admin/tariffs:
+    get:
+      tags: [HQ, Phase4]
+      summary: Published and draft tariff config
+      responses:
+        '200':
+          description: Tariff state
+    patch:
+      tags: [HQ, Phase4]
+      summary: Update draft tariffs (hq_admin)
+      responses:
+        '200':
+          description: Draft saved
+
+  /admin/tariffs/preview:
+    post:
+      tags: [HQ, Phase4]
+      summary: Preview tariff change impact
+      responses:
+        '200':
+          description: Orders affected estimate
+
+  /admin/tariffs/publish:
+    post:
+      tags: [HQ, Phase4]
+      summary: Publish tariffs + audit entry
+      responses:
+        '200':
+          description: Published
+
+  /admin/audit:
+    get:
+      tags: [HQ, Phase4]
+      summary: Paginated audit log
+      parameters:
+        - name: action
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Audit entries
+
+  /admin/audit/export:
+    get:
+      tags: [HQ, Phase4]
+      summary: WORM CSV export
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv]
+      responses:
+        '200':
+          description: CSV with X-Audit-Hash header
+
+  /admin/fraud/stats:
+    get:
+      tags: [HQ, Phase4, Antifraud]
+      summary: HQ fraud KPIs
+      responses:
+        '200':
+          description: Blocked/flagged stats
+
+  /admin/fraud/blocked-orders:
+    get:
+      tags: [HQ, Phase4, Antifraud]
+      summary: Blocked orders list
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Blocked orders
+
+  /admin/fraud/blocked-orders/{id}/unblock:
+    post:
+      tags: [HQ, Phase4, Antifraud]
+      summary: Unblock order + audit
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Unblocked
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    DarkstoreId:
+      name: darkstore_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DarkstoreIdQuery:
+      name: darkstore_id
+      in: query
+      required: true
+      schema:
+        type: string
+        format: uuid
+    OrderId:
+      name: order_id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IdempotencyKey:
+      name: X-Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid

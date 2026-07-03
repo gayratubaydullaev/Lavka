@@ -1,0 +1,17 @@
+FROM golang:1.22-alpine AS builder
+ARG SERVICE=catalog
+ARG PORT=8101
+WORKDIR /src
+COPY pkg ./pkg
+COPY ${SERVICE} ./${SERVICE}
+WORKDIR /src/${SERVICE}
+RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -o /app/service ./cmd/server
+
+FROM alpine:3.20
+ARG PORT=8101
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=builder /app/service /app/service
+ENV PORT=${PORT}
+EXPOSE ${PORT}
+CMD ["/app/service"]

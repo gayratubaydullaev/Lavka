@@ -1,0 +1,470 @@
+# Microservices + HPA (TZ §8.2) — apply per service namespace
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order
+  labels:
+    app: order
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: jomboy/order:latest
+          ports:
+            - containerPort: 8102
+          env:
+            - name: PORT
+              value: "8102"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: jomboy-db
+                  key: url
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8102
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8102
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order
+spec:
+  selector:
+    app: order
+  ports:
+    - port: 8102
+      targetPort: 8102
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: order-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: order
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: catalog
+  template:
+    metadata:
+      labels:
+        app: catalog
+    spec:
+      containers:
+        - name: catalog
+          image: jomboy/catalog:latest
+          ports:
+            - containerPort: 8101
+          env:
+            - name: PORT
+              value: "8101"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog
+spec:
+  selector:
+    app: catalog
+  ports:
+    - port: 8101
+      targetPort: 8101
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalog-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: catalog
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: picker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: picker
+  template:
+    metadata:
+      labels:
+        app: picker
+    spec:
+      containers:
+        - name: picker
+          image: jomboy/picker:latest
+          ports:
+            - containerPort: 8103
+          env:
+            - name: PORT
+              value: "8103"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8103
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: picker
+spec:
+  selector:
+    app: picker
+  ports:
+    - port: 8103
+      targetPort: 8103
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: picker-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: picker
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: courier
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: courier
+  template:
+    metadata:
+      labels:
+        app: courier
+    spec:
+      containers:
+        - name: courier
+          image: jomboy/courier:latest
+          ports:
+            - containerPort: 8104
+          env:
+            - name: PORT
+              value: "8104"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8104
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: courier
+spec:
+  selector:
+    app: courier
+  ports:
+    - port: 8104
+      targetPort: 8104
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: courier-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: courier
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: billing
+  template:
+    metadata:
+      labels:
+        app: billing
+    spec:
+      containers:
+        - name: billing
+          image: jomboy/billing:latest
+          ports:
+            - containerPort: 8105
+          env:
+            - name: PORT
+              value: "8105"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8105
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing
+spec:
+  selector:
+    app: billing
+  ports:
+    - port: 8105
+      targetPort: 8105
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: billing-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: billing
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: support
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: support
+  template:
+    metadata:
+      labels:
+        app: support
+    spec:
+      containers:
+        - name: support
+          image: jomboy/support:latest
+          ports:
+            - containerPort: 8106
+          env:
+            - name: PORT
+              value: "8106"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8106
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: support
+spec:
+  selector:
+    app: support
+  ports:
+    - port: 8106
+      targetPort: 8106
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: support-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: support
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+        - name: notification
+          image: jomboy/notification:latest
+          ports:
+            - containerPort: 8107
+          env:
+            - name: PORT
+              value: "8107"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8107
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification
+spec:
+  selector:
+    app: notification
+  ports:
+    - port: 8107
+      targetPort: 8107
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: notification-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: notification
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-bff
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: admin-bff
+  template:
+    metadata:
+      labels:
+        app: admin-bff
+    spec:
+      containers:
+        - name: admin-bff
+          image: jomboy/admin-bff:latest
+          ports:
+            - containerPort: 8108
+          env:
+            - name: PORT
+              value: "8108"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: jomboy-db
+                  key: url
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8108
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-bff
+spec:
+  selector:
+    app: admin-bff
+  ports:
+    - port: 8108
+      targetPort: 8108
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: admin-bff-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: admin-bff
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

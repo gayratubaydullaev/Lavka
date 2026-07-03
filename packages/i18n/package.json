@@ -1,0 +1,11 @@
+{
+  "name": "@jomboy/i18n",
+  "version": "1.0.0",
+  "private": true,
+  "main": "messages.json",
+  "exports": {
+    ".": "./messages.json",
+    "./messages": "./messages.json",
+    "./messages.json": "./messages.json"
+  }
+}

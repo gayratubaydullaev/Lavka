@@ -1,0 +1,10 @@
+{
+  "name": "@jomboy/design-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "main": "tokens.json",
+  "exports": {
+    ".": "./tokens.json",
+    "./css": "./tokens.css"
+  }
+}

@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.tools/
+
+# Build outputs
+dist/
+build/
+.dart_tool/
+.packages
+.pub-cache/
+*.iml
+
+# Flutter
+apps/customer-flutter/.flutter-plugins
+apps/customer-flutter/.flutter-plugins-dependencies
+
+# Android
+apps/*/android/.gradle/
+apps/*/android/app/build/
+apps/*/.gradle/
+apps/*/local.properties
+*.apk
+*.aab
+
+# iOS
+apps/customer-flutter/ios/Pods/
+apps/customer-flutter/ios/.symlinks/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Env
+.env
+.env.local
+*.local
+**/local.properties
+*.deb
+
+# Test artifacts
+e2e/test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+lcov.info

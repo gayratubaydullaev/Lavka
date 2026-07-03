@@ -1,0 +1,164 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  web-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run build --workspace=@jomboy/admin-director --if-present
+      - run: npm run build --workspace=@jomboy/admin-hq --if-present
+      - run: npm run build --workspace=@jomboy/admin-support --if-present
+      - run: npm run build --workspace=@jomboy/admin-warehouse --if-present
+      - run: node scripts/i18n-check.js
+
+  go-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build Go API image
+        run: docker compose build api
+
+  go-api-e2e:
+    runs-on: ubuntu-latest
+    needs: [go-api]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: cd e2e && npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Start Postgres + Go API
+        run: |
+          docker compose up -d postgres api
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4020/api/v1/health && break
+            sleep 2
+          done
+          curl -sf http://localhost:4020/api/v1/health
+      - name: E2E Go API smoke
+        working-directory: e2e
+        run: npx playwright test tests/smoke.spec.ts --grep "Go API"
+        env:
+          CI: "true"
+          GO_API_BASE_URL: http://localhost:4020/api/v1
+
+  e2e-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: cd e2e && npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: E2E API smoke
+        working-directory: e2e
+        run: npx playwright test tests/smoke.spec.ts --grep "API health"
+        env:
+          CI: "true"
+
+  e2e-web:
+    runs-on: ubuntu-latest
+    needs: [web-build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: cd e2e && npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Start stack
+        run: |
+          npm run mock:dev &
+          npm run admin:director &
+          npm run admin:hq &
+          sleep 8
+          curl -sf http://localhost:4010/api/v1/health
+      - name: E2E admin smoke
+        working-directory: e2e
+        run: npx playwright test tests/smoke.spec.ts --grep "Admin panels"
+        env:
+          CI: "true"
+
+  go-microservices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build microservice images
+        run: |
+          docker compose --profile prod-local build \
+            catalog order picker courier billing support notification admin-bff
+
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Run Go unit tests
+        run: |
+          cd services/pkg && go test ./...
+          cd ../billing/cmd/server && go test .
+          cd ../../order/cmd/server && go test .
+
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Trivy filesystem
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: 0
+
+  tz-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: cd e2e && npm ci
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - name: Start mock API
+        run: |
+          npm run mock:dev &
+          sleep 6
+          curl -sf http://localhost:4010/api/v1/health
+      - name: TZ acceptance E2E
+        working-directory: e2e
+        run: npx playwright test tests/tz-acceptance.spec.ts
+        env:
+          CI: "true"

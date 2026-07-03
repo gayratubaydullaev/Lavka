@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Jomboy Lavka API
+  version: 1.0.0
+  description: TZ v1.0 §3.3 — consolidated contract (implemented across Go microservices)
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Kong gateway (prod-local)
+  - url: http://localhost:4010/api/v1
+    description: Mock dev fallback
+paths:
+  /health:
+    get:
+      summary: Health (per-service via Kong or direct)
+  /catalog/darkstores/{darkstore_id}:
+    get:
+      summary: Catalog products — catalog service :8101
+  /catalog/search:
+    get:
+      summary: Search autocomplete — catalog + Elasticsearch
+  /orders:
+    get:
+      summary: List orders — order service :8102
+    post:
+      summary: Create order — order FSM NEW
+  /payments/webhooks/payme:
+    post:
+      summary: Payme webhook — billing :8105
+  /admin/darkstores/{id}/dashboard:
+    get:
+      summary: Director dashboard — admin-bff :8108

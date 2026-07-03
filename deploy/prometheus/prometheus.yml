@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: jomboy-services
+    static_configs:
+      - targets:
+          - catalog:8101
+          - order:8102
+          - picker:8103
+          - courier:8104
+          - billing:8105
+          - support:8106
+          - notification:8107
+          - admin-bff:8108
+    metrics_path: /metrics

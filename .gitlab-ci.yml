@@ -1,0 +1,42 @@
+stages:
+  - lint
+  - test
+
+variables:
+  PNPM_VERSION: "9"
+
+lint:web:
+  stage: lint
+  image: node:20
+  script:
+    - corepack enable
+    - pnpm install
+    - pnpm lint:web || true
+  only:
+    changes:
+      - apps/admin-*/**
+      - packages/**
+
+test:flutter:
+  stage: test
+  image: ghcr.io/cirruslabs/flutter:stable
+  script:
+    - cd apps/customer-flutter
+    - flutter pub get
+    - dart analyze
+  only:
+    changes:
+      - apps/customer-flutter/**
+
+test:android:
+  stage: test
+  image: eclipse-temurin:17-jdk
+  script:
+    - cd apps/picker-android && chmod +x gradlew 2>/dev/null || true
+    - echo "Android build requires Android SDK in CI"
+  allow_failure: true
+  only:
+    changes:
+      - apps/picker-android/**
+      - apps/courier-android/**
+      - packages/android-core/**

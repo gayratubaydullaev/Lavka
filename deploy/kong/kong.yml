@@ -1,0 +1,56 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: catalog
+    url: http://catalog:8101
+    routes:
+      - name: catalog
+        paths: ["/api/v1/catalog"]
+  - name: order
+    url: http://order:8102
+    routes:
+      - name: order
+        paths: ["/api/v1/orders", "/api/v1/delivery", "/api/v1/loyalty", "/api/v1/customers"]
+  - name: picker
+    url: http://picker:8103
+    routes:
+      - name: picker
+        paths: ["/api/v1/picker"]
+  - name: courier
+    url: http://courier:8104
+    routes:
+      - name: courier
+        paths: ["/api/v1/courier"]
+  - name: billing
+    url: http://billing:8105
+    routes:
+      - name: billing
+        paths: ["/api/v1/payments", "/api/v1/refunds"]
+  - name: support
+    url: http://support:8106
+    routes:
+      - name: support
+        paths: ["/api/v1/tickets", "/api/v1/support"]
+  - name: notification
+    url: http://notification:8107
+    routes:
+      - name: notification
+        paths: ["/api/v1/push", "/api/v1/auth/otp"]
+  - name: admin-bff
+    url: http://admin-bff:8108
+    routes:
+      - name: admin
+        paths: ["/api/v1/admin", "/api/v1/darkstores", "/api/v1/wms"]
+  - name: ws-support
+    url: http://support:8106
+    routes:
+      - name: websocket-support
+        paths: ["/api/v1/ws"]
+        protocols: ["http", "https"]
+  - name: mock-fallback
+    url: http://mock:4010
+    routes:
+      - name: mock-catchall
+        paths: ["/api/v1"]
+        regex_priority: 0
