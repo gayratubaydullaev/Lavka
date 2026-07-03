@@ -118,9 +118,9 @@ jobs:
           go-version: "1.22"
       - name: Run Go unit tests
         run: |
-          cd services/pkg && go test ./...
-          cd ../billing/cmd/server && go test .
-          cd ../../order/cmd/server && go test .
+          (cd services/pkg && go test ./...)
+          (cd services/billing/cmd/server && go test .)
+          (cd services/order/cmd/server && go test .)
 
   security-scan:
     runs-on: ubuntu-latest
