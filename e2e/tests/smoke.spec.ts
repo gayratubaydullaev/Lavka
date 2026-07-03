@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 const API = process.env.API_BASE_URL ?? 'http://localhost:4010/api/v1';
 const GO_API = process.env.GO_API_BASE_URL ?? 'http://localhost:4020/api/v1';
@@ -79,13 +79,22 @@ test.describe('Go API (when running)', () => {
 });
 
 test.describe('Admin panels', () => {
+  async function ensureDevLogin(page: Page) {
+    const loginBtn = page.getByRole('button', { name: /Dev Login|Keycloak Login/i });
+    if (await loginBtn.isVisible().catch(() => false)) {
+      await loginBtn.click();
+    }
+  }
+
   test('director dashboard loads after dev login', async ({ page }) => {
     await page.goto('http://localhost:5173/');
+    await ensureDevLogin(page);
     await expect(page.getByRole('heading', { name: /Дашборд даркстора/i })).toBeVisible({ timeout: 15_000 });
   });
 
   test('HQ analytics loads after dev login', async ({ page }) => {
     await page.goto('http://localhost:5175/');
-    await expect(page.getByRole('heading', { name: /Аналитика/i })).toBeVisible({ timeout: 15_000 });
+    await ensureDevLogin(page);
+    await expect(page.getByRole('heading', { name: /^Аналитика$/i })).toBeVisible({ timeout: 15_000 });
   });
 });
