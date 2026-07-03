@@ -12,41 +12,59 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onAdd;
   final String lang;
 
+  static SliverGridDelegate gridDelegate(BuildContext context) {
+    final wide = MediaQuery.sizeOf(context).width > 900;
+    return SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: wide ? 4 : 2,
+      childAspectRatio: wide ? 0.72 : 0.62,
+      crossAxisSpacing: 8,
+      mainAxisSpacing: 8,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/product/${product.id}'),
       child: Card(
+        clipBehavior: Clip.antiAlias,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AspectRatio(
-              aspectRatio: 1,
+            Expanded(
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 child: product.images.isNotEmpty
-                    ? CachedNetworkImage(imageUrl: product.images.first, fit: BoxFit.cover)
-                    : Container(color: AppTheme.surface),
+                    ? CachedNetworkImage(imageUrl: product.images.first, fit: BoxFit.cover, width: double.infinity)
+                    : Container(color: AppTheme.surface, width: double.infinity),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(product.localizedName(lang), maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14)),
-                  const SizedBox(height: 4),
-                  if (product.isHalal) const HalalBadge(),
+                  Text(
+                    product.localizedName(lang),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 13, height: 1.2),
+                  ),
+                  if (product.isHalal) ...[
+                    const SizedBox(height: 4),
+                    const HalalBadge(),
+                  ],
                   const SizedBox(height: 4),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      PriceTag(price: product.price, size: 14),
+                      Expanded(child: PriceTag(price: product.price, size: 13)),
                       IconButton(
-                        icon: const Icon(Icons.add_circle, color: AppTheme.primary),
+                        icon: const Icon(Icons.add_circle, color: AppTheme.primary, size: 26),
                         onPressed: onAdd,
                         padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        visualDensity: VisualDensity.compact,
+                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
                       ),
                     ],
                   ),
@@ -78,9 +96,8 @@ class CartBar extends StatelessWidget {
             animationDuration: const Duration(milliseconds: 200),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Корзина ($itemCount)'),
+              Flexible(child: Text('Корзина ($itemCount)', overflow: TextOverflow.ellipsis)),
               PriceTag(price: total, size: 16),
             ],
           ),

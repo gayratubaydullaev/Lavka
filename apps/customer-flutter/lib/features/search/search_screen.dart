@@ -78,7 +78,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ? const Center(child: CircularProgressIndicator())
                 : GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.72, crossAxisSpacing: 8, mainAxisSpacing: 8),
+                    gridDelegate: ProductCard.gridDelegate(context),
                     itemCount: _results.length,
                     itemBuilder: (_, i) => ProductCard(
                       product: _results[i],

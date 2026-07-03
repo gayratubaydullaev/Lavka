@@ -23,7 +23,7 @@ class CategoryScreen extends ConsumerWidget {
           final list = filtered.isEmpty ? products : filtered;
           return GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 0.72, crossAxisSpacing: 8, mainAxisSpacing: 8),
+            gridDelegate: ProductCard.gridDelegate(context),
             itemCount: list.length,
             itemBuilder: (_, i) => ProductCard(
               product: list[i],
