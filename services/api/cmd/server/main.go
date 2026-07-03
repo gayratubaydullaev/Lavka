@@ -11,6 +11,8 @@ import (
 
 	"github.com/go-chi/cors"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/jomboy-lavka/api/internal/config"
 	"github.com/jomboy-lavka/api/internal/db"
 	"github.com/jomboy-lavka/api/internal/handlers"
@@ -21,7 +23,7 @@ func main() {
 	cfg := config.Load()
 	ctx := context.Background()
 
-	pool, err := db.Connect(ctx, cfg.DatabaseURL)
+	pool, err := connectDB(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatalf("database: %v", err)
 	}
@@ -59,4 +61,18 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	_ = srv.Shutdown(shutdownCtx)
+}
+
+func connectDB(ctx context.Context, databaseURL string) (*pgxpool.Pool, error) {
+	var lastErr error
+	for attempt := 1; attempt <= 30; attempt++ {
+		pool, err := db.Connect(ctx, databaseURL)
+		if err == nil {
+			return pool, nil
+		}
+		lastErr = err
+		log.Printf("database: attempt %d/30: %v", attempt, err)
+		time.Sleep(2 * time.Second)
+	}
+	return nil, lastErr
 }

@@ -112,6 +112,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:4020/api/v1/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 45s
 
   admin-bff:
     profiles: ["prod-local"]

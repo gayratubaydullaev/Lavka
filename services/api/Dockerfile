@@ -6,7 +6,7 @@ COPY . .
 RUN go mod tidy && CGO_ENABLED=0 GOOS=linux go build -o /api ./cmd/server
 
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates wget
 WORKDIR /app
 COPY --from=builder /api /app/api
 EXPOSE 4020
