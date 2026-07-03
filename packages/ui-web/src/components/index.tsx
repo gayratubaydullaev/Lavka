@@ -35,7 +35,7 @@ interface Column<T> {
   render?: (row: T) => React.ReactNode;
 }
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   data,
   onRowClick,
@@ -57,7 +57,9 @@ export function DataTable<T extends Record<string, unknown>>({
         {data.map((row, i) => (
           <tr key={i} onClick={() => onRowClick?.(row)} className={onRowClick ? 'clickable' : ''}>
             {columns.map((c) => (
-              <td key={c.key}>{c.render ? c.render(row) : String(row[c.key] ?? '')}</td>
+              <td key={c.key}>
+                {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '')}
+              </td>
             ))}
           </tr>
         ))}

@@ -1,3 +1,4 @@
+/// <reference path="../env.d.ts" />
 export const API_BASE = import.meta.env?.VITE_API_BASE_URL ?? 'http://localhost:4010/api/v1';
 export const DARKSTORE_ID = import.meta.env?.VITE_DARKSTORE_ID ?? 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 

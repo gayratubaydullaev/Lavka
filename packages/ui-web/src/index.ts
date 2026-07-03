@@ -1,3 +1,4 @@
+/// <reference path="./env.d.ts" />
 export { api, formatUzs, API_BASE, DARKSTORE_ID } from './api/client';
 export type { Order, Ticket, DashboardData, GmvReport, OrderStatus } from './api/client';
 export type { TimelineEvent, FraudProfile, AiSuggestion, AutoRefundEligibility } from './api/phase3';

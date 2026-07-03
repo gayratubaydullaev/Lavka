@@ -1,3 +1,4 @@
+/// <reference path="../env.d.ts" />
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 export type UserRole =
