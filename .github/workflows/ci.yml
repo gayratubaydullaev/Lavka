@@ -39,7 +39,6 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - run: cd e2e && npm ci
       - run: npx playwright install --with-deps chromium
         working-directory: e2e
       - name: Start Postgres + Go API
@@ -55,6 +54,7 @@ jobs:
         run: npx playwright test tests/smoke.spec.ts --grep "Go API"
         env:
           CI: "true"
+          SKIP_WEBSERVER: "true"
           GO_API_BASE_URL: http://localhost:4020/api/v1
 
   e2e-api:
@@ -66,7 +66,6 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - run: cd e2e && npm ci
       - run: npx playwright install --with-deps chromium
         working-directory: e2e
       - name: E2E API smoke
@@ -85,7 +84,6 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - run: cd e2e && npm ci
       - run: npx playwright install --with-deps chromium
         working-directory: e2e
       - name: Start stack
@@ -149,7 +147,6 @@ jobs:
           node-version: "20"
           cache: npm
       - run: npm ci
-      - run: cd e2e && npm ci
       - run: npx playwright install --with-deps chromium
         working-directory: e2e
       - name: Start mock API
