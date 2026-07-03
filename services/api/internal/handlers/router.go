@@ -26,6 +26,7 @@ func NewRouter(cfg config.Config, pool *pgxpool.Pool) http.Handler {
 		api.Get("/health", health.ServeHTTP)
 		api.Post("/auth/otp/send", auth.SendOTP)
 		api.Post("/auth/otp/verify", auth.VerifyOTP)
+		api.Post("/auth/guest", auth.GuestSession)
 
 		api.Get("/catalog/darkstores/{darkstore_id}", catalog.ListProducts)
 		api.Get("/catalog/categories", catalog.ListCategories)

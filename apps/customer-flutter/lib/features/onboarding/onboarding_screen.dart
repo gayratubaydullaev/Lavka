@@ -88,7 +88,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           _controller.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
                         } else {
                           await ref.read(authProvider.notifier).setOnboarded();
-                          if (context.mounted) context.go('/auth');
+                          if (context.mounted) context.go('/');
                         }
                       }
                     : null,

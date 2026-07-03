@@ -80,9 +80,17 @@ registerPhase3Routes(app, phase3, state);
 const phase4 = createPhase4State();
 registerPhase4Routes(app, phase4, state);
 
+function isPublicPath(path, method) {
+  if (path.startsWith('/auth') || path === '/health') return true;
+  if (path.startsWith('/catalog/')) return true;
+  if (path === '/delivery/quote' && method === 'POST') return true;
+  if (path.includes('/webhooks/')) return true;
+  return false;
+}
+
 function auth(req, res, next) {
+  if (isPublicPath(req.path, req.method)) return next();
   const header = req.headers.authorization;
-  if (!header && (req.path.startsWith('/auth') || req.path === '/health' || req.path.includes('/webhooks/'))) return next();
   if (!header) return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Missing token' });
   next();
 }
@@ -105,7 +113,15 @@ app.post('/api/v1/auth/otp/verify', (req, res) => {
   res.json({
     access_token: `mock-jwt-${role}`,
     refresh_token: 'mock-refresh',
-    user: { id: randomUUID(), role, name: 'Test User' },
+    user: { id: randomUUID(), role, name: 'Test User', is_guest: false },
+  });
+});
+
+app.post('/api/v1/auth/guest', (_req, res) => {
+  const guestId = `guest-${randomUUID().slice(0, 8)}`;
+  res.json({
+    access_token: 'mock-jwt-guest',
+    user: { id: guestId, role: 'customer', name: 'Гость', is_guest: true },
   });
 });
 

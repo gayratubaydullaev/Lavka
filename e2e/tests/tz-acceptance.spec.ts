@@ -186,4 +186,27 @@ test.describe('TZ §8.5 E2E acceptance', () => {
       expect(fraudStats.blocked_count).toBeGreaterThanOrEqual(0);
     }
   });
+
+  test('E2E-11 guest browse and order without registration', async ({ request }) => {
+    const catalog = await request.get(`${API}/catalog/darkstores/${DS}?limit=1`);
+    expect(catalog.ok()).toBeTruthy();
+
+    const guest = await request.post(`${API}/auth/guest`);
+    expect(guest.ok()).toBeTruthy();
+    const guestBody = await guest.json();
+    const token = `Bearer ${guestBody.access_token}`;
+    const products = (await catalog.json()).products;
+
+    const order = await request.post(`${API}/orders`, {
+      headers: { Authorization: token, 'Content-Type': 'application/json' },
+      data: {
+        darkstore_id: DS,
+        customer_id: guestBody.user.id,
+        items: [{ product_id: products[0].id, quantity: 1 }],
+        delivery_address: { mahalla_id: 'm1', landmark: 'guest entrance' },
+        payment_method: 'payme',
+      },
+    });
+    expect(order.ok()).toBeTruthy();
+  });
 });

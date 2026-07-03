@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -43,6 +44,20 @@ func (h AuthHandler) VerifyOTP(w http.ResponseWriter, r *http.Request) {
 		"token_type":   "Bearer",
 		"expires_in":   86400,
 		"user_id":      "cust-dilshod",
+		"user":         map[string]any{"id": "cust-dilshod", "name": "Dilshod", "is_guest": false},
+	})
+}
+
+func (h AuthHandler) GuestSession(w http.ResponseWriter, _ *http.Request) {
+	guestID := "guest-" + uuid.New().String()[:8]
+	writeJSON(w, http.StatusOK, map[string]any{
+		"access_token": "mock-jwt-guest",
+		"user": map[string]any{
+			"id":       guestID,
+			"role":     "customer",
+			"name":     "Гость",
+			"is_guest": true,
+		},
 	})
 }
 

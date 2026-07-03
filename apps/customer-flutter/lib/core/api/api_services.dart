@@ -23,6 +23,11 @@ class AuthApi {
     final res = await _dio.post('/auth/otp/verify', data: {'session_id': sessionId, 'code': code});
     return res.data as Map<String, dynamic>;
   }
+
+  Future<Map<String, dynamic>> createGuestSession() async {
+    final res = await _dio.post('/auth/guest');
+    return res.data as Map<String, dynamic>;
+  }
 }
 
 class CatalogApi {
@@ -109,6 +114,7 @@ class OrderApi {
     required List<Map<String, dynamic>> items,
     required Map<String, dynamic> deliveryAddress,
     required String paymentMethod,
+    required String customerId,
     String? promocode,
     int bonusPointsToSpend = 0,
   }) async {
@@ -118,9 +124,9 @@ class OrderApi {
           'items': items,
           'delivery_address': deliveryAddress,
           'payment_method': paymentMethod,
+          'customer_id': customerId,
           if (promocode != null) 'promocode': promocode,
           if (bonusPointsToSpend > 0) 'bonus_points_to_spend': bonusPointsToSpend,
-          'customer_id': 'cust-dilshod',
         },
         options: Options(headers: {'X-Idempotency-Key': _uuid.v4()}));
     return res.data as Map<String, dynamic>;

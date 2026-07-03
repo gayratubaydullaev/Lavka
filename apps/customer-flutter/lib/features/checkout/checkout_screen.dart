@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../core/api/api_services.dart';
 import '../../core/providers/city_provider.dart';
 import '../../core/models/models.dart';
+import '../../core/providers/auth_provider.dart';
 import '../../core/providers/cart_provider.dart';
 import '../../core/providers/loyalty_provider.dart';
 import '../../widgets/common_widgets.dart';
@@ -48,8 +49,10 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     setState(() => _loading = true);
     try {
       final cart = ref.read(cartProvider.notifier);
+      final auth = ref.read(authProvider);
       final loyalty = ref.read(loyaltyProvider);
       final darkstoreId = ref.read(cityProvider);
+      final customerId = ref.read(authProvider).userId ?? 'guest-anonymous';
       final orderRes = await ref.read(orderApiProvider).createOrder(
             darkstoreId: darkstoreId,
             items: cart.toOrderItems(),
@@ -60,8 +63,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               if (_entrancePhotoPath != null) 'entrance_photo': _entrancePhotoPath,
             },
             paymentMethod: _payment,
-            promocode: loyalty.appliedPromoCode,
-            bonusPointsToSpend: loyalty.bonusToApply(cart.subtotal),
+            customerId: customerId,
+            promocode: auth.isGuest ? null : loyalty.appliedPromoCode,
+            bonusPointsToSpend: auth.isGuest ? 0 : loyalty.bonusToApply(cart.subtotal),
           );
       final orderId = orderRes['order_id'] as String;
       final total = orderRes['total_amount'] as int;

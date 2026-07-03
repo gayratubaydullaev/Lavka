@@ -22,7 +22,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    ref.read(loyaltyProvider.notifier).load();
+    final auth = ref.read(authProvider);
+    if (!auth.isGuest) {
+      ref.read(loyaltyProvider.notifier).load();
+    }
   }
 
   @override
@@ -38,8 +41,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ListTile(
             leading: const CircleAvatar(child: Icon(Icons.person)),
             title: Text(auth.userName ?? 'Пользователь'),
-            subtitle: Text(auth.userId ?? ''),
+            subtitle: Text(auth.isGuest ? 'Гостевой режим • ${auth.userId ?? ''}' : (auth.userId ?? '')),
           ),
+          if (auth.isGuest)
+            Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListTile(
+                leading: const Icon(Icons.login, color: AppTheme.primary),
+                title: const Text('Войти по номеру телефона'),
+                subtitle: const Text('Бонусы, история и персональные предложения'),
+                onTap: () => context.push('/auth'),
+              ),
+            ),
+          if (!auth.isGuest)
           Card(
             margin: const EdgeInsets.all(16),
             color: AppTheme.primary.withValues(alpha: 0.08),
@@ -57,7 +71,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
           ),
-          if (loyalty.referralCode != null)
+          if (!auth.isGuest && loyalty.referralCode != null)
             Card(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               child: ListTile(
@@ -115,14 +129,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             title: const Text('Сообщить о проблеме'),
             onTap: () => context.push('/support'),
           ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Выйти'),
-            onTap: () {
-              ref.read(authProvider.notifier).logout();
-              context.go('/auth');
-            },
-          ),
+          if (!auth.isGuest)
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Выйти'),
+              onTap: () async {
+                await ref.read(authProvider.notifier).logout();
+                if (context.mounted) context.go('/');
+              },
+            ),
         ],
       ),
     );

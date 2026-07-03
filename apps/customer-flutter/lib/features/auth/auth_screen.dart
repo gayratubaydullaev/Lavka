@@ -38,10 +38,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     setState(() => _loading = true);
     try {
       final res = await ref.read(authApiProvider).verifyOtp(_sessionId!, _otpController.text);
+      final user = res['user'] as Map<String, dynamic>?;
       await ref.read(authProvider.notifier).setAuthenticated(
             accessToken: res['access_token'] as String,
-            userId: res['user']['id'] as String,
-            userName: res['user']['name'] as String,
+            userId: (user?['id'] ?? res['user_id']) as String,
+            userName: (user?['name'] ?? 'Пользователь') as String,
           );
       if (mounted) context.go('/');
     } catch (e) {
@@ -49,6 +50,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _continueAsGuest() async {
+    await ref.read(authProvider.notifier).enterAsGuest();
+    if (mounted) context.go('/');
   }
 
   @override
@@ -85,6 +91,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 child: _loading
                     ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : Text(_otpSent ? 'Войти' : 'Получить код'),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: _loading ? null : _continueAsGuest,
+                child: const Text('Продолжить без регистрации'),
               ),
               const Spacer(),
             ],

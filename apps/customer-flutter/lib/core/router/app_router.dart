@@ -22,14 +22,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: auth.isOnboarded ? (auth.isAuthenticated ? '/' : '/auth') : '/onboarding',
+    initialLocation: auth.isOnboarded ? '/' : '/onboarding',
     redirect: (context, state) {
       final isOnboarding = state.matchedLocation == '/onboarding';
-      final isAuth = state.matchedLocation == '/auth';
-
       if (!auth.isOnboarded && !isOnboarding) return '/onboarding';
-      if (auth.isOnboarded && !auth.isAuthenticated && !isAuth && !isOnboarding) return '/auth';
-      if (auth.isAuthenticated && (isAuth || isOnboarding)) return '/';
+      if (auth.isOnboarded && auth.isAuthenticated && state.matchedLocation == '/auth') {
+        return '/';
+      }
       return null;
     },
     routes: [
