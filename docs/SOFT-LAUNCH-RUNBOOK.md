@@ -14,7 +14,7 @@
 2. Run DB migrations per service
 3. Seed catalog 3900 SKU + ES reindex: `scripts/catalog/es-index.sh`
 4. Switch DNS / Kong upstream from mock to Go services
-5. Enable Keycloak: `VITE_KEYCLOAK_ENABLED=true` on web panels
+5. Enable Keycloak authentication on web panels (set Keycloak enabled in Vite env)
 
 ## 7-day monitoring (§8.7)
 

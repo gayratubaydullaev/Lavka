@@ -46,6 +46,13 @@ e2e/test-results/
 .DS_Store
 Thumbs.db
 
+# Secrets / keys (never commit)
+*.pem
+Xalida*
+**/id_rsa*
+**/id_ed25519*
+**/id_ecdsa*
+
 # Logs
 *.log
 
