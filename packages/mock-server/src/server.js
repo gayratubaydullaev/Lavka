@@ -704,7 +704,7 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Jomboy Lavka mock API: http://localhost:${PORT}/api/v1`);
   console.log(`WebSocket: ws://localhost:${PORT}/api/v1/ws?channel=orders&order_id=<id>`);
   console.log(`Darkstore ID: ${DARKSTORE_ID}`);

@@ -6,6 +6,7 @@ import '../../core/api/api_services.dart';
 import '../../core/models/models.dart';
 import '../../core/providers/cart_provider.dart';
 import '../../core/providers/city_provider.dart';
+import '../../widgets/api_error_view.dart';
 import '../../widgets/product_card.dart';
 
 final categoriesProvider = FutureProvider<List<Category>>((ref) {
@@ -195,7 +196,7 @@ class HomeScreen extends ConsumerWidget {
                           },
                         ),
                         loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (e, _) => Center(child: Text('$e')),
+                        error: (e, _) => Center(child: ApiErrorView(error: e)),
                       ),
                     ),
                   ),
@@ -216,7 +217,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       ),
                       loading: () => const SliverFillRemaining(child: Center(child: CircularProgressIndicator())),
-                      error: (e, _) => SliverFillRemaining(child: Center(child: Text('Ошибка загрузки: $e'))),
+                      error: (e, _) => SliverFillRemaining(child: ApiErrorView(error: e)),
                     ),
                   ),
                   SliverToBoxAdapter(child: SizedBox(height: cart.isNotEmpty ? 80 : 16)),
