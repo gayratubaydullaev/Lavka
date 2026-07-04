@@ -15,6 +15,7 @@ import '../../core/providers/location_provider.dart';
 import '../../core/providers/loyalty_provider.dart';
 import '../../core/providers/locale_provider.dart';
 import '../../core/utils/format.dart';
+import '../../core/utils/scaffold_config.dart';
 import '../../widgets/common_widgets.dart';
 
 class CheckoutScreen extends ConsumerStatefulWidget {
@@ -150,6 +151,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final deliveryFee = quoteAsync.value?.deliveryFee ?? 0;
 
     return Scaffold(
+      resizeToAvoidBottomInset: scaffoldResizeToAvoidBottomInset,
       appBar: AppBar(title: Text(l10n.checkoutTitle)),
       body: ListView(
         padding: const EdgeInsets.all(16),

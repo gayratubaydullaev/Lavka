@@ -13,6 +13,7 @@ import '../../core/providers/locale_provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/format.dart';
 import '../../core/utils/locale_utils.dart';
+import '../../core/utils/scaffold_config.dart';
 import '../../widgets/common_widgets.dart';
 import '../../widgets/empty_state.dart';
 
@@ -94,6 +95,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     final total = (subtotal - loyalty.promoDiscount - bonusApplied).clamp(0, subtotal);
 
     return Scaffold(
+      resizeToAvoidBottomInset: scaffoldResizeToAvoidBottomInset,
       appBar: AppBar(
         title: Text(l10n.cart),
         actions: [

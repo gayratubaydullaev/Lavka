@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../core/api/api_services.dart';
 import '../../core/l10n/app_localizations.dart';
+import '../../core/utils/scaffold_config.dart';
 import '../../core/models/models.dart';
 import '../../core/providers/cart_provider.dart';
 import '../../core/providers/city_provider.dart';
@@ -106,6 +107,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final lang = ref.watch(localeProvider).productLangKey;
 
     return Scaffold(
+      resizeToAvoidBottomInset: scaffoldResizeToAvoidBottomInset,
       appBar: AppBar(
         title: TextField(
           controller: _controller,

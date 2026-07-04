@@ -5,9 +5,11 @@ import 'package:uuid/uuid.dart';
 
 import 'app.dart';
 import 'core/api/api_services.dart';
+import 'core/web/viewport_fix.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initWebViewportFix();
   await Hive.initFlutter();
   await Hive.openBox('settings');
   await Hive.openBox('cart');

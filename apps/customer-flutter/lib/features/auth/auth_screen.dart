@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/api/api_services.dart';
 import '../../core/providers/auth_provider.dart';
+import '../../core/utils/scaffold_config.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -60,6 +61,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: scaffoldResizeToAvoidBottomInset,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
