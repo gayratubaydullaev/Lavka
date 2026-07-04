@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+
+import '../config/app_config.dart';
 
 class AuthState {
   const AuthState({
@@ -42,7 +45,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _load();
   }
 
-  static const _guestToken = 'mock-jwt-guest';
+  static const _fallbackGuestToken = 'mock-jwt-guest';
 
   Box get _box => Hive.box('settings');
 
@@ -62,19 +65,50 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> enterAsGuest() async {
-    final guestId = 'guest-${const Uuid().v4().substring(0, 8)}';
-    await _box.put('access_token', _guestToken);
-    await _box.put('user_id', guestId);
-    await _box.put('user_name', 'Гость');
-    await _box.put('is_guest', true);
+  Future<void> _persistSession({
+    required String accessToken,
+    required String userId,
+    required String userName,
+    required bool isGuest,
+  }) async {
+    await _box.put('access_token', accessToken);
+    await _box.put('user_id', userId);
+    await _box.put('user_name', userName);
+    await _box.put('is_guest', isGuest);
     state = AuthState(
-      accessToken: _guestToken,
-      userId: guestId,
-      userName: 'Гость',
+      accessToken: accessToken,
+      userId: userId,
+      userName: userName,
       isOnboarded: _box.get('is_onboarded') == true,
-      isGuest: true,
+      isGuest: isGuest,
     );
+  }
+
+  Future<void> enterAsGuest() async {
+    try {
+      final dio = Dio(BaseOptions(
+        baseUrl: AppConfig.apiBaseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ));
+      final res = await dio.post('/auth/guest');
+      final data = res.data as Map<String, dynamic>;
+      final user = Map<String, dynamic>.from(data['user'] as Map);
+      await _persistSession(
+        accessToken: data['access_token'] as String,
+        userId: user['id'] as String,
+        userName: user['name'] as String? ?? 'Гость',
+        isGuest: user['is_guest'] as bool? ?? true,
+      );
+    } catch (_) {
+      final guestId = 'guest-${const Uuid().v4().substring(0, 8)}';
+      await _persistSession(
+        accessToken: _fallbackGuestToken,
+        userId: guestId,
+        userName: 'Гость',
+        isGuest: true,
+      );
+    }
   }
 
   Future<void> setAuthenticated({
@@ -82,11 +116,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String userId,
     required String userName,
   }) async {
-    await _box.put('access_token', accessToken);
-    await _box.put('user_id', userId);
-    await _box.put('user_name', userName);
-    await _box.put('is_guest', false);
-    state = state.copyWith(
+    await _persistSession(
       accessToken: accessToken,
       userId: userId,
       userName: userName,

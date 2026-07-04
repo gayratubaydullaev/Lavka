@@ -12,23 +12,42 @@ extension AppLocaleX on AppLocale {
         AppLocale.en => const Locale('en'),
       };
 
-  String get apiHeader => switch (this) {
-        AppLocale.uzCyrl => 'uz-Cyrl',
-        AppLocale.uzLatn => 'uz-Latn',
-        AppLocale.ru => 'ru',
-        AppLocale.en => 'en',
+  String get label => switch (this) {
+        AppLocale.uzCyrl => 'Ўзбек (кирилл)',
+        AppLocale.uzLatn => 'O\'zbek (lotin)',
+        AppLocale.ru => 'Русский',
+        AppLocale.en => 'English',
       };
 }
 
 class LocaleNotifier extends StateNotifier<Locale> {
   LocaleNotifier() : super(const Locale('ru')) {
-    final code = Hive.box('settings').get('locale', defaultValue: 'ru') as String;
-    state = Locale(code);
+    final box = Hive.box('settings');
+    final code = box.get('locale_code', defaultValue: 'ru') as String;
+    final script = box.get('locale_script') as String?;
+    state = script != null ? Locale(code, script) : Locale(code);
   }
 
   Future<void> setLocale(AppLocale appLocale) async {
-    await Hive.box('settings').put('locale', appLocale.locale.languageCode);
-    state = appLocale.locale;
+    final box = Hive.box('settings');
+    final loc = appLocale.locale;
+    await box.put('locale_code', loc.languageCode);
+    if (loc.scriptCode != null) {
+      await box.put('locale_script', loc.scriptCode);
+    } else {
+      await box.delete('locale_script');
+    }
+    state = loc;
+  }
+
+  AppLocale get currentAppLocale {
+    for (final l in AppLocale.values) {
+      if (l.locale.languageCode == state.languageCode &&
+          l.locale.scriptCode == state.scriptCode) {
+        return l;
+      }
+    }
+    return AppLocale.ru;
   }
 }
 

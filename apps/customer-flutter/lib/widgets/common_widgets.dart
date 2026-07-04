@@ -1,40 +1,42 @@
 import 'package:flutter/material.dart';
-
-import '../core/theme/app_theme.dart';
-import '../core/utils/format.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/utils/format.dart';
 
 class PriceTag extends StatelessWidget {
-  const PriceTag({super.key, required this.price, this.size = 16});
+  const PriceTag({super.key, required this.price, this.size = 16, this.locale});
   final int price;
   final double size;
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      formatPrice(price),
+      formatPrice(price, locale: locale),
       style: TextStyle(fontSize: size, fontWeight: FontWeight.w600, color: AppTheme.textPrimary),
     );
   }
 }
 
 class HalalBadge extends StatelessWidget {
-  const HalalBadge({super.key});
+  const HalalBadge({super.key, this.label = 'Халяль'});
+  final String label;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(color: AppTheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-      child: Text('Халяль', style: TextStyle(color: AppTheme.primary, fontSize: 12, fontWeight: FontWeight.w500)),
+      child: Text(label, style: TextStyle(color: AppTheme.primary, fontSize: 12, fontWeight: FontWeight.w500)),
     );
   }
 }
 
 class DeliveryProgress extends StatelessWidget {
-  const DeliveryProgress({super.key, required this.status});
+  const DeliveryProgress({super.key, required this.status, this.labels = const ['Принят', 'Собираем', 'В пути', 'Доставлен']});
   final String status;
+  final List<String> labels;
 
   static const steps = ['ACCEPTED', 'ASSEMBLY', 'IN_DELIVERY', 'DELIVERED'];
-  static const labels = ['Принят', 'Собираем', 'В пути', 'Доставлен'];
 
   @override
   Widget build(BuildContext context) {

@@ -41,6 +41,20 @@ class Product {
 
   String localizedName(String lang) =>
       name[lang] ?? name['ru'] ?? name.values.first;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'price': price,
+        'stock': stock,
+        'zone': zone,
+        if (weightG != null) 'weight_g': weightG,
+        'is_halal': isHalal,
+        'images': images,
+        if (brand != null) 'brand': brand,
+        if (barcode != null) 'barcode': barcode,
+        if (category != null) 'category': category,
+      };
 }
 
 class Category {

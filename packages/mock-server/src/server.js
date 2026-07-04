@@ -136,6 +136,7 @@ app.get('/api/v1/catalog/darkstores/:darkstore_id', (req, res) => {
   if (req.query.brand) filtered = filtered.filter((p) => p.brand === req.query.brand);
   if (req.query.min_price) filtered = filtered.filter((p) => p.price >= parseInt(req.query.min_price, 10));
   if (req.query.max_price) filtered = filtered.filter((p) => p.price <= parseInt(req.query.max_price, 10));
+  if (req.query.category) filtered = filtered.filter((p) => p.category === req.query.category);
   const start = (page - 1) * limit;
   res.json({
     products: filtered.slice(start, start + limit),
@@ -145,6 +146,12 @@ app.get('/api/v1/catalog/darkstores/:darkstore_id', (req, res) => {
 
 app.get('/api/v1/catalog/categories', (req, res) => {
   res.json({ categories });
+});
+
+app.get('/api/v1/catalog/products/:product_id', (req, res) => {
+  const product = state.products.find((p) => p.id === req.params.product_id && p.active);
+  if (!product) return res.status(404).json({ code: 'NOT_FOUND', message: 'Product not found' });
+  res.json(product);
 });
 
 app.get('/api/v1/catalog/search', (req, res) => {

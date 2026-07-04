@@ -4,11 +4,15 @@ import 'package:uuid/uuid.dart';
 
 import '../api/dio_provider.dart';
 import '../models/models.dart';
+import '../providers/auth_provider.dart';
 
 final catalogApiProvider = Provider<CatalogApi>((ref) => CatalogApi(ref.watch(dioProvider)));
 final orderApiProvider = Provider<OrderApi>((ref) => OrderApi(ref.watch(dioProvider)));
 final authApiProvider = Provider<AuthApi>((ref) => AuthApi(ref.watch(dioProvider)));
-final loyaltyApiProvider = Provider<LoyaltyApi>((ref) => LoyaltyApi(ref.watch(dioProvider)));
+final loyaltyApiProvider = Provider<LoyaltyApi>((ref) {
+  final userId = ref.watch(authProvider).userId ?? 'guest';
+  return LoyaltyApi(ref.watch(dioProvider), userId: userId);
+});
 
 class AuthApi {
   AuthApi(this._dio);
@@ -34,10 +38,11 @@ class CatalogApi {
   CatalogApi(this._dio);
   final Dio _dio;
 
-  Future<List<Product>> getProducts({required String darkstoreId, int page = 1, bool? isHalal}) async {
+  Future<List<Product>> getProducts({required String darkstoreId, int page = 1, bool? isHalal, String? category}) async {
     final res = await _dio.get('/catalog/darkstores/$darkstoreId', queryParameters: {
       'page': page,
       if (isHalal != null) 'is_halal': isHalal,
+      if (category != null) 'category': category,
     });
     final data = res.data as Map<String, dynamic>;
     return (data['products'] as List).map((e) => Product.fromJson(e as Map<String, dynamic>)).toList();
@@ -47,6 +52,9 @@ class CatalogApi {
     final res = await _dio.get('/catalog/categories', queryParameters: {'darkstore_id': darkstoreId});
     return (res.data['categories'] as List).map((e) => Category.fromJson(e as Map<String, dynamic>)).toList();
   }
+
+  Future<List<Product>> getProductsByCategory({required String darkstoreId, required String categoryId}) =>
+      getProducts(darkstoreId: darkstoreId, category: categoryId, page: 1);
 
   Future<List<Product>> search({required String darkstoreId, required String query}) async {
     final res = await _dio.get('/catalog/search', queryParameters: {
@@ -85,11 +93,12 @@ class CatalogApi {
   }
 
   Future<Product?> getProduct(String id, {required String darkstoreId}) async {
-    final products = await getProducts(darkstoreId: darkstoreId, page: 1);
     try {
-      return products.firstWhere((p) => p.id == id);
-    } catch (_) {
-      return null;
+      final res = await _dio.get('/catalog/products/$id', queryParameters: {'darkstore_id': darkstoreId});
+      return Product.fromJson(res.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
     }
   }
 }
@@ -177,21 +186,22 @@ class OrderApi {
 }
 
 class LoyaltyApi {
-  LoyaltyApi(this._dio);
+  LoyaltyApi(this._dio, {required this.userId});
   final Dio _dio;
+  final String userId;
 
   Future<Map<String, dynamic>> getWallet() async {
-    final res = await _dio.get('/loyalty/wallet', queryParameters: {'user_id': 'cust-dilshod'});
+    final res = await _dio.get('/loyalty/wallet', queryParameters: {'user_id': userId});
     return res.data as Map<String, dynamic>;
   }
 
   Future<Map<String, dynamic>> getReferral() async {
-    final res = await _dio.get('/loyalty/referral', queryParameters: {'user_id': 'cust-dilshod'});
+    final res = await _dio.get('/loyalty/referral', queryParameters: {'user_id': userId});
     return res.data as Map<String, dynamic>;
   }
 
   Future<List<Map<String, dynamic>>> getHistory() async {
-    final res = await _dio.get('/loyalty/history', queryParameters: {'user_id': 'cust-dilshod'});
+    final res = await _dio.get('/loyalty/history', queryParameters: {'user_id': userId});
     return (res.data['history'] as List).cast<Map<String, dynamic>>();
   }
 

@@ -3,17 +3,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_config.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
+import '../utils/locale_utils.dart';
 
 final dioProvider = Provider<Dio>((ref) {
+  final locale = ref.watch(localeProvider);
   final dio = Dio(BaseOptions(
     baseUrl: AppConfig.apiBaseUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 30),
-    headers: {'Accept-Language': 'ru'},
+    headers: {'Accept-Language': locale.apiHeader},
   ));
 
   dio.interceptors.add(InterceptorsWrapper(
     onRequest: (options, handler) {
+      options.headers['Accept-Language'] = ref.read(localeProvider).apiHeader;
       final token = ref.read(authProvider).accessToken;
       if (token != null) {
         options.headers['Authorization'] = 'Bearer $token';

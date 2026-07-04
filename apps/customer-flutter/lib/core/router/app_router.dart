@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../providers/auth_provider.dart';
+import '../providers/cart_provider.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/auth/auth_screen.dart';
 import '../../features/home/home_screen.dart';
@@ -20,6 +20,7 @@ import '../../features/shell/main_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(authProvider);
+  final cart = ref.watch(cartProvider);
 
   return GoRouter(
     initialLocation: auth.isOnboarded ? '/' : '/onboarding',
@@ -28,6 +29,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (!auth.isOnboarded && !isOnboarding) return '/onboarding';
       if (auth.isOnboarded && auth.isAuthenticated && state.matchedLocation == '/auth') {
         return '/';
+      }
+      if (state.matchedLocation == '/checkout' && cart.isEmpty) {
+        return '/cart';
       }
       return null;
     },
